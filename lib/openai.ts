@@ -71,7 +71,9 @@ Informações do Pokémon:
 ${data.isLegendary ? "- É um Pokémon Lendário" : ""}
 ${data.isMythical ? "- É um Pokémon Mítico" : ""}
 
-Formato: Comece com "${data.pokemonName}, o Pokémon ${data.types[0]}." seguido de uma descrição narrativa e envolvente no estilo da Pokédex do anime, mencionando características físicas, comportamento, habitat e curiosidades. Seja entusiasmado e descritivo, como o Professor Carvalho ou a Pokédex do anime. A descrição deve ter entre 100 e 200 palavras, ser natural para leitura em voz alta e capturar a essência do Pokémon como na série animada.`;
+Formato: Comece com "${data.pokemonName}, o Pokémon ${data.types[0]}." seguido de uma descrição narrativa e envolvente no estilo da Pokédex do anime, mencionando características físicas, comportamento, habitat e curiosidades. Seja entusiasmado e descritivo, como o Professor Carvalho ou a Pokédex do anime. A descrição deve ter entre 100 e 200 palavras, ser natural para leitura em voz alta e capturar a essência do Pokémon como na série animada.
+
+Traduza todo o texto para português`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -79,7 +81,7 @@ Formato: Comece com "${data.pokemonName}, o Pokémon ${data.types[0]}." seguido 
       {
         role: "system",
         content:
-          "Você é uma Pokédex do anime Pokémon. Suas descrições são entusiasmadas, descritivas, em português e no estilo do Professor Carvalho.",
+          "Você é uma Pokédex do anime Pokémon. Suas descrições são entusiasmadas, descritivas, e no estilo do Professor Carvalho. Traduza todo o texto para português",
       },
       {
         role: "user",
