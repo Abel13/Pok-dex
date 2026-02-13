@@ -435,25 +435,47 @@ export default function VisorCamera({
             ></div>
           )}
 
-          {/* Camera icon */}
           <svg
-            className={`w-8 h-8 m-4 sm:w-10 sm:h-10 ${isVideoReady && !isIdentifying && !captureError ? "text-pokedex-cyan" : "text-gray-500"}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            width="40"
+            height="40"
+            viewBox="0 0 256 256"
+            xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              d="M128 16 
+           A112 112 0 0 1 240 128 
+           L16 128 
+           A112 112 0 0 1 128 16 Z"
+              fill="#E3350D"
             />
+
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+              d="M16 128 
+           A112 112 0 0 0 240 128 
+           L16 128 Z"
+              fill="#FFFFFF"
             />
+
+            <rect x="16" y="120" width="224" height="16" fill="#111111" />
+
+            <circle
+              cx="128"
+              cy="128"
+              r="112"
+              fill="none"
+              stroke="#111111"
+              strokeWidth="8"
+            />
+
+            <circle
+              cx="128"
+              cy="128"
+              r="28"
+              fill="#FFFFFF"
+              stroke="#111111"
+              strokeWidth="8"
+            />
+            <circle cx="128" cy="128" r="12" fill="#111111" />
           </svg>
         </button>
       </div>

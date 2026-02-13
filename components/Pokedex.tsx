@@ -286,6 +286,11 @@ export default function Pokedex() {
     setIsInfoOpen(false);
   };
 
+  const handleSelectPokemonFromMap = async (id: number) => {
+    await handleSelectPokemonWithClose(id);
+    setViewMode("details");
+  };
+
   return (
     <div className="h-screen bg-pokedex-dark flex flex-col overflow-hidden">
       {/* Header */}
@@ -456,7 +461,11 @@ export default function Pokedex() {
                 </div>
               </div>
             ) : viewMode === "map" ? (
-              <CaptureMap captures={captures} />
+              <CaptureMap
+                captures={captures}
+                selectedPokemonId={selectedPokemonId}
+                onSelectPokemon={handleSelectPokemonFromMap}
+              />
             ) : (
               <PokemonCentralDisplay
                 data={pokemonData}

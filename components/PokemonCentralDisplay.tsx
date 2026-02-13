@@ -85,7 +85,7 @@ export default function PokemonCentralDisplay({
 
           {/* Texto Principal */}
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4 font-tech text-glow-cyan">
-            USE A CÂMERA PARA ESCANEAR POKÉMON
+            USE A CÂMERA PARA CAPTURAR UM POKÉMON
           </h2>
 
           {/* Texto Secundário */}

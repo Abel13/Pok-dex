@@ -28,6 +28,8 @@ import "leaflet/dist/leaflet.css";
 
 interface CaptureMapProps {
   captures: Capture[];
+  selectedPokemonId: number | null;
+  onSelectPokemon: (id: number) => void;
 }
 
 interface GroupedCapture {
@@ -74,12 +76,16 @@ function groupCapturesByLocation(
 }
 
 // Custom marker icon for single Pokémon
-function createPokemonIcon(pokemonId: number, L: any) {
+function createPokemonIcon(pokemonId: number, L: any, isSelected?: boolean) {
   if (!L) {
     return undefined;
   }
 
   const iconUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
+  const borderWidth = isSelected ? 3 : 2;
+  const boxShadow = isSelected
+    ? "0 0 24px rgba(6, 182, 212, 0.8), 0 0 40px rgba(6, 182, 212, 0.4)"
+    : "0 0 20px rgba(6, 182, 212, 0.5)";
 
   return L.divIcon({
     className: "pokemon-marker",
@@ -87,12 +93,12 @@ function createPokemonIcon(pokemonId: number, L: any) {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 2px solid #06b6d4;
+      border: ${borderWidth}px solid #06b6d4;
       background: rgba(10, 10, 10, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+      box-shadow: ${boxShadow};
       overflow: hidden;
     ">
       <img src="${iconUrl}" alt="Pokémon ${pokemonId}" style="width: 100%; height: 100%; object-fit: contain;" />
@@ -103,10 +109,14 @@ function createPokemonIcon(pokemonId: number, L: any) {
 }
 
 // Custom marker icon for multiple Pokémon
-function createMultiPokemonIcon(count: number, L: any) {
+function createMultiPokemonIcon(count: number, L: any, isSelected?: boolean) {
   if (!L) {
     return undefined;
   }
+
+  const boxShadow = isSelected
+    ? "0 0 24px rgba(124, 58, 237, 0.8), 0 0 40px rgba(124, 58, 237, 0.4)"
+    : "0 0 20px rgba(124, 58, 237, 0.5)";
 
   return L.divIcon({
     className: "pokemon-marker-multi",
@@ -119,7 +129,7 @@ function createMultiPokemonIcon(count: number, L: any) {
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+      box-shadow: ${boxShadow};
       position: relative;
     ">
       <div style="
@@ -134,7 +144,11 @@ function createMultiPokemonIcon(count: number, L: any) {
   });
 }
 
-export default function CaptureMap({ captures }: CaptureMapProps) {
+export default function CaptureMap({
+  captures,
+  selectedPokemonId,
+  onSelectPokemon,
+}: CaptureMapProps) {
   const groupedCaptures = useMemo(
     () => groupCapturesByLocation(captures),
     [captures],
@@ -282,16 +296,34 @@ export default function CaptureMap({ captures }: CaptureMapProps) {
 
           {groupedCaptures.map((group, index) => {
             const isMulti = group.pokemonIds.length > 1;
+            const groupIsSelected = group.pokemonIds.includes(
+              selectedPokemonId ?? -1,
+            );
             const L = (window as any).L;
             const icon = isMulti
-              ? createMultiPokemonIcon(group.pokemonIds.length, L)
-              : createPokemonIcon(group.pokemonIds[0], L);
+              ? createMultiPokemonIcon(
+                  group.pokemonIds.length,
+                  L,
+                  groupIsSelected,
+                )
+              : createPokemonIcon(
+                  group.pokemonIds[0],
+                  L,
+                  selectedPokemonId === group.pokemonIds[0],
+                );
 
             return (
               <Marker
                 key={`${group.lat}-${group.lng}-${index}`}
                 position={[group.lat, group.lng]}
                 icon={icon}
+                eventHandlers={
+                  !isMulti
+                    ? {
+                        click: () => onSelectPokemon(group.pokemonIds[0]),
+                      }
+                    : undefined
+                }
               >
                 <Popup className="pokemon-popup">
                   <div className="bg-pokedex-dark border border-pokedex-cyan/30 rounded-lg p-3 min-w-[200px]">
@@ -302,9 +334,11 @@ export default function CaptureMap({ captures }: CaptureMapProps) {
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {group.pokemonIds.map((pokemonId) => (
-                        <div
+                        <button
                           key={pokemonId}
-                          className="flex flex-col items-center gap-1"
+                          type="button"
+                          onClick={() => onSelectPokemon(pokemonId)}
+                          className="flex flex-col items-center gap-1 rounded-lg p-1 hover:bg-pokedex-cyan/10 border border-transparent hover:border-pokedex-cyan/30 transition-all cursor-pointer"
                         >
                           <Image
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`}
@@ -317,7 +351,7 @@ export default function CaptureMap({ captures }: CaptureMapProps) {
                           <span className="text-xs text-gray-400 font-mono">
                             #{pokemonId}
                           </span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -337,6 +371,7 @@ export default function CaptureMap({ captures }: CaptureMapProps) {
           background: transparent;
           box-shadow: none;
           padding: 0;
+          pointer-events: auto;
         }
         .pokemon-popup .leaflet-popup-tip {
           background: rgba(10, 10, 10, 0.95);
