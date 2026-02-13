@@ -31,11 +31,10 @@ export default function Pokedex() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { scannedIds, addScannedPokemon, isScanned } = useScannedPokemon();
   const {
-    isPro,
     canScan,
     canGenerateDescription,
     canAccessPokemon,
-    incrementUsage,
+    updateUsageFromServer,
     refetchPlan,
     planData,
     scansRemaining,
@@ -102,15 +101,13 @@ export default function Pokedex() {
           weight: data.pokemon.weight / 10, // Convert to kg
           isLegendary: data.species.is_legendary || false,
           isMythical: data.species.is_mythical || false,
-          plan: planData.plan,
-          monthlyDescriptions: planData.monthlyDescriptions,
         }),
       });
 
       if (describeResponse.ok) {
-        const { description } = await describeResponse.json();
-        incrementUsage("description");
-        speak(description);
+        const json = await describeResponse.json();
+        if (json.usage) updateUsageFromServer(json.usage);
+        speak(json.description);
       } else if (describeResponse.status === 429) {
         const json = await describeResponse.json().catch(() => ({}));
         speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
@@ -161,8 +158,7 @@ export default function Pokedex() {
   };
 
   const handleCapture = async (imageData: string) => {
-    const totalScanned = scannedIds.size;
-    if (!canScan(totalScanned)) {
+    if (!canScan(planData.totalScanned)) {
       setIsUpgradeModalOpen(true);
       return;
     }
@@ -176,23 +172,20 @@ export default function Pokedex() {
       const identifyResponse = await fetch("/api/identify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          image: imageData,
-          plan: planData.plan,
-          dailyScans: planData.dailyScans,
-          totalScanned,
-        }),
+        body: JSON.stringify({ image: imageData }),
       });
 
       if (identifyResponse.status === 429) {
         const json = await identifyResponse.json().catch(() => ({}));
-        throw new Error(json.error || "Limite atingido. Upgrade para PRO.");
+        throw new Error(json.error || "Limite atingido. Apoie o projeto para continuar.");
       }
       if (!identifyResponse.ok) {
         throw new Error("Erro ao identificar Pokémon");
       }
 
-      const { pokemonName } = await identifyResponse.json();
+      const identifyJson = await identifyResponse.json();
+      const pokemonName = identifyJson.pokemonName;
+      if (identifyJson.usage) updateUsageFromServer(identifyJson.usage);
 
       if (pokemonName === "UNKNOWN" || !pokemonName) {
         throw new Error("Pokémon não identificado. Tente novamente.");
@@ -212,15 +205,13 @@ export default function Pokedex() {
 
       if (!canAccessPokemon(data.pokemon.id)) {
         setCaptureError(
-          "Pokémon #152+ requer PRO para visualizar. Faça upgrade para desbloquear.",
+          "Pokémon #152+ não disponível nesta versão.",
         );
         setIsUpgradeModalOpen(true);
         return;
       }
 
-      // Mark Pokémon as scanned and increment usage
       addScannedPokemon(data.pokemon.id);
-      incrementUsage("scan");
 
       setPokemonData(data);
       setSelectedPokemonId(data.pokemon.id);
@@ -272,9 +263,6 @@ export default function Pokedex() {
           onToggleInfo={() => setIsInfoOpen(!isInfoOpen)}
           isRosterOpen={isRosterOpen}
           isInfoOpen={isInfoOpen}
-          isPro={isPro()}
-          scansRemaining={scansRemaining}
-          onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
           isLoggedIn={isLoggedIn}
           onOpenAuth={() => setIsAuthModalOpen(true)}
           onSignOut={signOut}
@@ -310,8 +298,7 @@ export default function Pokedex() {
             scannedIds={scannedIds}
             isScanned={isScanned}
             canAccessPokemon={canAccessPokemon}
-            isPro={isPro()}
-            totalScannedLimit={planData.plan === "pro" ? Infinity : 50}
+            totalScannedLimit={50}
             onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
           />
         </div>
@@ -336,7 +323,6 @@ export default function Pokedex() {
               onOpenCamera={handleOpenCamera}
               isLoading={isLoadingPokemon}
               canGenerateDescription={canGenerateDescription()}
-              isPro={isPro()}
               descriptionsRemaining={descriptionsRemaining}
               onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
             />
@@ -377,11 +363,6 @@ export default function Pokedex() {
       <UpgradeModal
         isOpen={isUpgradeModalOpen}
         onClose={() => setIsUpgradeModalOpen(false)}
-        isLoggedIn={isLoggedIn}
-        onOpenAuth={() => {
-          setIsUpgradeModalOpen(false);
-          setIsAuthModalOpen(true);
-        }}
         usage={{
           dailyScans: planData.dailyScans,
           monthlyDescriptions: planData.monthlyDescriptions,
@@ -391,7 +372,7 @@ export default function Pokedex() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={() => setIsUpgradeModalOpen(true)}
+        onSuccess={() => setIsAuthModalOpen(false)}
         signIn={signIn}
         signUp={signUp}
         authError={authError}

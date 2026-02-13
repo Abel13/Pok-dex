@@ -52,16 +52,12 @@ npm run build
 npm start
 ```
 
-6. **Webhook Stripe (assinaturas PRO):**
-Para receber eventos do Stripe em desenvolvimento, use o comando com a URL correta:
-```bash
-npm run stripe:listen
+6. **Doações (Buy Me a Coffee):**
+Configure o username do seu perfil Buy Me a Coffee em `.env.local`:
 ```
-Ou manualmente:
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+NEXT_PUBLIC_BUYMECOFFEE_USERNAME=seuusername
 ```
-O `stripe listen` exibirá um signing secret (`whsec_...`). Atualize `STRIPE_WEBHOOK_SECRET` no `.env` com esse valor para testes locais.
+O botão de doação aparecerá no Footer e no modal de limite atingido.
 
 ## Funcionalidades
 

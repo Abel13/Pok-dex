@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateAnimeDescription, PokemonDescriptionData } from "@/lib/openai";
-import { PLAN_LIMITS } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/server";
+import { getAndValidateUsage, incrementUsage } from "@/lib/usage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,27 +16,30 @@ export async function POST(request: NextRequest) {
       weight,
       isLegendary,
       isMythical,
-      plan = "free",
-      monthlyDescriptions = 0,
     } = body;
 
-    // Plan limit verification (FREE)
-    if (plan !== "pro") {
-      const limits = PLAN_LIMITS.FREE;
-      if (monthlyDescriptions >= limits.MONTHLY_DESCRIPTIONS) {
-        return NextResponse.json(
-          {
-            error: "Limite mensal de descrições atingido. Upgrade para PRO para continuar.",
-            code: "MONTHLY_LIMIT",
-            upgrade: true,
-          },
-          { status: 429 }
-        );
-      }
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const userId = session?.user?.id ?? null;
+
+    const validation = await getAndValidateUsage(request, userId, "description");
+    if (!validation.ok) {
+      return NextResponse.json(
+        { error: validation.error, code: validation.code, upgrade: true },
+        { status: 429 }
+      );
     }
 
-    // Validate required fields
-    if (!pokemonName || !types || !abilities || !stats || height === undefined || weight === undefined) {
+    if (
+      !pokemonName ||
+      !types ||
+      !abilities ||
+      !stats ||
+      height === undefined ||
+      weight === undefined
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -53,7 +57,6 @@ export async function POST(request: NextRequest) {
       isMythical: Boolean(isMythical),
     };
 
-    // Generate description with timeout
     const descriptionPromise = generateAnimeDescription(descriptionData);
     const timeoutPromise = new Promise<string>((_, reject) =>
       setTimeout(() => reject(new Error("Timeout")), 10000)
@@ -64,7 +67,18 @@ export async function POST(request: NextRequest) {
       timeoutPromise,
     ]);
 
-    return NextResponse.json({ description });
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const usage = await incrementUsage(userId, ip, "description");
+
+    return NextResponse.json({
+      description,
+      usage: {
+        monthlyDescriptions: usage.monthlyDescriptions,
+      },
+    });
   } catch (error) {
     console.error("Error generating Pokémon description:", error);
 

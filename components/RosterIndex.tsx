@@ -13,7 +13,6 @@ interface RosterIndexProps {
   scannedIds: Set<number>;
   isScanned: (id: number) => boolean;
   canAccessPokemon?: (id: number) => boolean;
-  isPro?: boolean;
   totalScannedLimit?: number;
   onOpenUpgrade?: () => void;
 }
@@ -26,23 +25,14 @@ export default function RosterIndex({
   scannedIds,
   isScanned,
   canAccessPokemon = () => true,
-  isPro = false,
-  totalScannedLimit = Infinity,
+  totalScannedLimit = 50,
   onOpenUpgrade,
 }: RosterIndexProps) {
   const [pokemonList, setPokemonList] = useState<PokemonListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [listFilter, setListFilter] = useState<"all" | "scanned">("all");
 
-  // Calcular limite dinâmico: FREE = 151 (Kanto), PRO = todos
-  const dynamicLimit = useMemo(() => {
-    if (isPro) {
-      if (scannedIds.size === 0) return 151;
-      const maxId = Math.max(...Array.from(scannedIds));
-      return Math.max(151, maxId);
-    }
-    return 151; // FREE: apenas Kanto
-  }, [scannedIds, isPro]);
+  const dynamicLimit = 151; // Kanto apenas
 
   useEffect(() => {
     setLoading(true);
@@ -191,25 +181,34 @@ export default function RosterIndex({
               />
             </div>
           </div>
-          {!isPro && scannedIds.size >= totalScannedLimit && onOpenUpgrade && (
+          {scannedIds.size >= totalScannedLimit && onOpenUpgrade && (
             <button
               onClick={onOpenUpgrade}
               className="mt-2 w-full py-1.5 px-2 bg-pokedex-purple/50 hover:bg-pokedex-purple text-pokedex-neon text-xs font-bold rounded transition-all"
             >
-              UPGRADE TO PRO
+              APOIE O PROJETO
             </button>
           )}
         </div>
       </div>
 
-      {/* List */}
-      <div className="flex-1 overflow-y-auto overscroll-contain">
+      {/* List - scrollview customizado com tema Pokédex */}
+      <div
+        className="flex-1 overflow-y-auto overscroll-contain scroll-pokedex min-h-0 relative"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px",
+        }}
+      >
         {filteredList.length === 0 ? (
           <div className="p-4 text-center text-gray-400 text-sm">
             No Pokémon found
           </div>
         ) : (
-          <div className="divide-y divide-pokedex-blue-light/10">
+          <div className="divide-y divide-pokedex-blue-light/10 py-1">
             {filteredList.map((pokemon) => {
               const scanned = isScanned(pokemon.id);
               const canAccess = canAccessPokemon(pokemon.id);
@@ -227,7 +226,7 @@ export default function RosterIndex({
                     }
                   }}
                   disabled={!selectable}
-                  title={!scanned ? "Escaneie este Pokémon primeiro" : !canAccess ? "Upgrade para PRO" : undefined}
+                  title={!scanned ? "Escaneie este Pokémon primeiro" : !canAccess ? "Pokémon #152+ não disponível" : undefined}
                   className={`w-full p-3 flex items-center gap-3 transition-all ${
                     selectable
                       ? "hover:bg-pokedex-blue-light/10 cursor-pointer"
@@ -257,8 +256,8 @@ export default function RosterIndex({
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     {scanned && !canAccess && (
-                      <span className="text-[10px] font-bold text-pokedex-purple bg-pokedex-purple/20 px-1 rounded">
-                        PRO
+                      <span className="text-[10px] font-bold text-gray-500 px-1">
+                        🔒
                       </span>
                     )}
                     <span className="text-lg">{selectable ? "⚡" : "🔒"}</span>

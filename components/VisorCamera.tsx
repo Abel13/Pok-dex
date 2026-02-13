@@ -283,7 +283,7 @@ export default function VisorCamera({
           </div>
           {!canScan && scansRemaining < Infinity && (
             <span className="text-xs font-mono text-amber-400">
-              SCANS TODAY: {scansRemaining}/10 — UPGRADE TO PRO
+              SCANS TODAY: {scansRemaining}/10 — APOIE O PROJETO
             </span>
           )}
           {canScan && scansRemaining < Infinity && (
@@ -389,7 +389,7 @@ export default function VisorCamera({
               onClick={onUpgradeClick}
               className="w-full py-2 px-4 bg-pokedex-purple hover:bg-pokedex-purple/80 text-white font-bold text-sm rounded transition-all"
             >
-              UPGRADE TO PRO
+              APOIE O PROJETO
             </button>
           </div>
         </div>

@@ -9,9 +9,6 @@ interface HeaderProps {
   onToggleInfo: () => void;
   isRosterOpen: boolean;
   isInfoOpen: boolean;
-  isPro?: boolean;
-  scansRemaining?: number;
-  onOpenUpgrade?: () => void;
   isLoggedIn?: boolean;
   onOpenAuth?: () => void;
   onSignOut?: () => void;
@@ -24,9 +21,6 @@ export default function Header({
   onToggleInfo,
   isRosterOpen,
   isInfoOpen,
-  isPro = false,
-  scansRemaining = 10,
-  onOpenUpgrade,
   isLoggedIn = false,
   onOpenAuth,
   onSignOut,
@@ -91,20 +85,9 @@ export default function Header({
                 </svg>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold text-white font-tech text-glow-blue">
-                    PDEXAI_V1.0
-                  </h1>
-                  <span
-                    className={`px-1.5 py-0.5 rounded text-xs font-bold ${
-                      isPro
-                        ? "bg-pokedex-purple text-pokedex-neon"
-                        : "bg-pokedex-gray text-gray-400"
-                    }`}
-                  >
-                    {isPro ? "PRO" : "FREE"}
-                  </span>
-                </div>
+                <h1 className="text-xl font-bold text-white font-tech text-glow-blue">
+                  PDEXAI_V1.0
+                </h1>
                 <p className="text-xs text-pokedex-cyan">
                   SYSTEM STATUS: OPTIMAL // CORE ACTIVE
                 </p>
@@ -160,15 +143,6 @@ export default function Header({
                   ENTRAR
                 </button>
               )
-            )}
-            {!isPro && onOpenUpgrade && (
-              <button
-                onClick={onOpenUpgrade}
-                className="px-4 py-2 bg-pokedex-purple/50 hover:bg-pokedex-purple text-pokedex-neon rounded-lg font-semibold text-sm transition-all"
-                title="Upgrade para PRO"
-              >
-                ⚡ UPGRADE
-              </button>
             )}
             <button
               onClick={onOpenCamera}

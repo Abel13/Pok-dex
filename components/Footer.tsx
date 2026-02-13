@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+const BUYMECOFFEE_USERNAME = process.env.NEXT_PUBLIC_BUYMECOFFEE_USERNAME;
+
 export default function Footer() {
   const [coordinates, setCoordinates] = useState<string>("34.0522° N, 118.2437° W");
   const [latency, setLatency] = useState<number>(14);
@@ -70,8 +72,22 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-2 text-center">
+        {/* Donation + Copyright */}
+        <div className="mt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+          {BUYMECOFFEE_USERNAME && (
+            <a
+              href={`https://www.buymeacoffee.com/${BUYMECOFFEE_USERNAME}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="opacity-80 hover:opacity-100 transition-opacity"
+            >
+              <img
+                src={`https://img.buymeacoffee.com/button-api/?text=Apoie o projeto&slug=${BUYMECOFFEE_USERNAME}&button_colour=5F7FFF&font_colour=ffffff&height=28`}
+                alt="Buy Me a Coffee"
+                className="h-7"
+              />
+            </a>
+          )}
           <p className="text-xs text-gray-500">
             © 2024 PDEXAI_ENTERPRISE
           </p>

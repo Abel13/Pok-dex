@@ -9,7 +9,6 @@ interface PokemonCentralDisplayProps {
   onOpenCamera?: () => void;
   isLoading?: boolean;
   canGenerateDescription?: boolean;
-  isPro?: boolean;
   descriptionsRemaining?: number;
   onOpenUpgrade?: () => void;
 }
@@ -32,7 +31,6 @@ export default function PokemonCentralDisplay({
   onOpenCamera,
   isLoading = false,
   canGenerateDescription = true,
-  isPro = false,
   descriptionsRemaining = 20,
   onOpenUpgrade,
 }: PokemonCentralDisplayProps) {
@@ -225,11 +223,6 @@ export default function PokemonCentralDisplay({
 
       {/* Type Tags - Top Right - Ajustado para mobile */}
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-1 sm:gap-2 flex-wrap justify-end items-center">
-        {isPro && (
-          <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded text-xs font-bold text-pokedex-neon bg-pokedex-purple/50">
-            PRO
-          </span>
-        )}
         {!canGenerateDescription &&
           descriptionsRemaining < Infinity &&
           onOpenUpgrade && (
@@ -238,7 +231,7 @@ export default function PokemonCentralDisplay({
               className="px-2 py-0.5 sm:px-3 sm:py-1 rounded text-xs font-bold text-amber-400 bg-amber-900/50 hover:bg-amber-900/70 border border-amber-500/50 transition-all"
               title="Limite mensal de descrições atingido"
             >
-              UPGRADE PRO
+              APOIE O PROJETO
             </button>
           )}
         {pokemon.types.map((type) => (
