@@ -1,0 +1,232 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Cores customizadas Pokedex */
+  --color-pokedex-blue: #1e3a8a;
+  --color-pokedex-blue-light: #3b82f6;
+  --color-pokedex-purple: #7c3aed;
+  --color-pokedex-cyan: #06b6d4;
+  --color-pokedex-dark: #0a0a0a;
+  --color-pokedex-gray: #1f2937;
+  --color-pokedex-red: #8B0000;
+  --color-pokedex-neon: #00ff9d;
+  
+  /* Fontes customizadas */
+  --font-mono: "JetBrains Mono", monospace;
+  --font-tech: "Orbitron", sans-serif;
+}
+
+:root {
+  --pokedex-blue: #1e3a8a;
+  --pokedex-blue-light: #3b82f6;
+  --pokedex-purple: #7c3aed;
+  --pokedex-cyan: #06b6d4;
+  --pokedex-dark: #0a0a0a;
+  --pokedex-gray: #1f2937;
+  --pokedex-red: #8B0000;
+  --pokedex-neon: #00ff9d;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  @apply bg-pokedex-dark text-white;
+  font-family: 'JetBrains Mono', monospace;
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+@layer utilities {
+  .glow-red {
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.5), 0 0 40px rgba(139, 0, 0, 0.3);
+  }
+  
+  .glow-neon {
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.5), 0 0 40px rgba(0, 255, 157, 0.3);
+  }
+  
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3);
+  }
+  
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.5), 0 0 40px rgba(124, 58, 237, 0.3);
+  }
+  
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5), 0 0 40px rgba(6, 182, 212, 0.3);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+  
+  .text-glow-blue {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+  }
+  
+  .text-glow-purple {
+    text-shadow: 0 0 10px rgba(124, 58, 237, 0.8);
+  }
+  
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+  }
+  
+  .border-glow-blue {
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  }
+  
+  .border-glow-purple {
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+  }
+  
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Smooth scroll */
+  .overflow-y-auto {
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent overscroll bounce on mobile */
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+  
+  /* Camera animations */
+  @keyframes pulse-scan {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+  
+  @keyframes rotate-scan {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes fill-capture {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes scan-line {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 0;
+    }
+  }
+  
+  .animate-pulse-scan {
+    animation: pulse-scan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-rotate-scan {
+    animation: rotate-scan 3s linear infinite;
+  }
+  
+  .animate-fill-capture {
+    animation: fill-capture 2s ease-in-out;
+  }
+  
+  .animate-pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-scan-line {
+    animation: scan-line 2s linear infinite;
+  }
+  
+  /* Thinking/Processing animations */
+  @keyframes thinking-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.7;
+    }
+  }
+  
+  @keyframes thinking-dots {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  .animate-thinking {
+    animation: thinking-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-thinking-dots {
+    animation: thinking-dots 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-thinking-dots:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  .animate-thinking-dots:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .animate-thinking-dots:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
