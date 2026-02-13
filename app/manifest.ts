@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Pokédex futurista com reconhecimento por câmera",
     start_url: "/",
     display: "standalone",
-    background_color: "#0a0a0a",
+    background_color: "#1e3a8a",
     theme_color: "#3b82f6",
     icons: [
       {
