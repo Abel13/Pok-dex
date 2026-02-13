@@ -292,11 +292,8 @@ export default function Pokedex() {
       <div className="flex-shrink-0">
         <Header
           onSearch={handleSearch}
-          onOpenCamera={handleOpenCamera}
           onToggleRoster={() => setIsRosterOpen(!isRosterOpen)}
-          onToggleInfo={() => setIsInfoOpen(!isInfoOpen)}
           isRosterOpen={isRosterOpen}
-          isInfoOpen={isInfoOpen}
           isLoggedIn={isLoggedIn}
           onOpenAuth={() => setIsAuthModalOpen(true)}
           onSignOut={signOut}
@@ -339,8 +336,8 @@ export default function Pokedex() {
 
         {/* Center - Pokemon Display / Map */}
         <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-          {/* View Toggle Bar - dedicated row, no overlap */}
-          <div className="flex items-center bg-pokedex-dark/80">
+          {/* View Toggle Bar - tabs left, actions right */}
+          <div className="flex items-center justify-between bg-pokedex-dark/80">
             <div className="flex">
               <button
                 onClick={() => setViewMode("details")}
@@ -387,6 +384,58 @@ export default function Pokedex() {
                     strokeLinejoin="round"
                     strokeWidth={2}
                     d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex">
+              <button
+                onClick={handleOpenCamera}
+                className="p-2.5 transition-all border-2 bg-pokedex-gray/80 text-gray-400 border-pokedex-gray hover:border-pokedex-cyan/50 hover:text-pokedex-cyan"
+                title="Abrir Câmera"
+                aria-label="Abrir Câmera"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => setIsInfoOpen(!isInfoOpen)}
+                className={`p-2.5 transition-all border-2 ${
+                  isInfoOpen
+                    ? "bg-pokedex-cyan text-black border-pokedex-cyan"
+                    : "bg-pokedex-gray/80 text-gray-400 border-pokedex-gray hover:border-pokedex-cyan/50 hover:text-pokedex-cyan"
+                }`}
+                title="Info"
+                aria-label="Abrir ou fechar painel Info"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
               </button>
