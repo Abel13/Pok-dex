@@ -287,8 +287,8 @@ export default function Pokedex() {
   };
 
   const handleSelectPokemonFromMap = async (id: number) => {
+    setViewMode("details"); // Troca imediatamente para mostrar loading
     await handleSelectPokemonWithClose(id);
-    setViewMode("details");
   };
 
   return (
