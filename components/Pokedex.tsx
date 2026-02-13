@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Header from "./Header";
 import RosterIndex from "./RosterIndex";
 import PokemonCentralDisplay from "./PokemonCentralDisplay";
@@ -13,6 +14,9 @@ import { PokemonData } from "@/lib/types";
 import { useScannedPokemon } from "@/lib/hooks/useScannedPokemon";
 import { useUserPlan } from "@/lib/hooks/useUserPlan";
 import { useAuth } from "@/lib/hooks/useAuth";
+
+// Dynamically import CaptureMap (client-side only, uses Leaflet)
+const CaptureMap = dynamic(() => import("./CaptureMap"), { ssr: false });
 
 export default function Pokedex() {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
@@ -29,7 +33,9 @@ export default function Pokedex() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { scannedIds, addScannedPokemon, isScanned } = useScannedPokemon();
+  const [viewMode, setViewMode] = useState<"details" | "map">("details");
+  const { scannedIds, captures, addScannedPokemon, isScanned } =
+    useScannedPokemon();
   const {
     canScan,
     canGenerateDescription,
@@ -177,7 +183,9 @@ export default function Pokedex() {
 
       if (identifyResponse.status === 429) {
         const json = await identifyResponse.json().catch(() => ({}));
-        throw new Error(json.error || "Limite atingido. Apoie o projeto para continuar.");
+        throw new Error(
+          json.error || "Limite atingido. Apoie o projeto para continuar.",
+        );
       }
       if (!identifyResponse.ok) {
         throw new Error("Erro ao identificar Pokémon");
@@ -204,14 +212,50 @@ export default function Pokedex() {
       const data: PokemonData = await pokemonResponse.json();
 
       if (!canAccessPokemon(data.pokemon.id)) {
-        setCaptureError(
-          "Pokémon #152+ não disponível nesta versão.",
-        );
+        setCaptureError("Pokémon #152+ não disponível nesta versão.");
         setIsUpgradeModalOpen(true);
         return;
       }
 
-      addScannedPokemon(data.pokemon.id);
+      // Get geolocation if available
+      let location: { lat: number; lng: number } | undefined;
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise<GeolocationPosition>(
+            (resolve, reject) => {
+              const timeout = setTimeout(() => {
+                reject(new Error("Geolocation timeout"));
+              }, 5000);
+
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  clearTimeout(timeout);
+                  resolve(pos);
+                },
+                (err) => {
+                  clearTimeout(timeout);
+                  reject(err);
+                },
+                {
+                  enableHighAccuracy: true,
+                  timeout: 5000,
+                  maximumAge: 0,
+                },
+              );
+            },
+          );
+
+          location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+        } catch (err) {
+          // Geolocation failed or denied - continue without location
+          console.log("Geolocation not available:", err);
+        }
+      }
+
+      addScannedPokemon(data.pokemon.id, location);
 
       setPokemonData(data);
       setSelectedPokemonId(data.pokemon.id);
@@ -303,30 +347,88 @@ export default function Pokedex() {
           />
         </div>
 
-        {/* Center - Pokemon Display */}
-        <div className="flex-1 overflow-hidden min-h-0">
-          {error ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-red-400 mb-4">{error}</p>
-                <button
-                  onClick={() => setError(null)}
-                  className="px-4 py-2 bg-pokedex-red rounded-lg hover:bg-red-700 transition-all"
+        {/* Center - Pokemon Display / Map */}
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+          {/* View Toggle Bar - dedicated row, no overlap */}
+          <div className="flex items-center bg-pokedex-dark/80">
+            <div className="flex">
+              <button
+                onClick={() => setViewMode("details")}
+                className={`p-2.5 transition-all border-2 ${
+                  viewMode === "details"
+                    ? "bg-pokedex-cyan text-black border-pokedex-cyan"
+                    : "bg-pokedex-gray/80 text-gray-400 border-pokedex-gray hover:border-pokedex-cyan/50 hover:text-pokedex-cyan"
+                }`}
+                title="Ver Detalhes"
+                aria-label="Ver Detalhes"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Tentar Novamente
-                </button>
-              </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={`p-2.5 transition-all border-2 ${
+                  viewMode === "map"
+                    ? "bg-pokedex-cyan text-black border-pokedex-cyan"
+                    : "bg-pokedex-gray/80 text-gray-400 border-pokedex-gray hover:border-pokedex-cyan/50 hover:text-pokedex-cyan"
+                }`}
+                title="Ver Mapa"
+                aria-label="Ver Mapa"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                  />
+                </svg>
+              </button>
             </div>
-          ) : (
-            <PokemonCentralDisplay
-              data={pokemonData}
-              onOpenCamera={handleOpenCamera}
-              isLoading={isLoadingPokemon}
-              canGenerateDescription={canGenerateDescription()}
-              descriptionsRemaining={descriptionsRemaining}
-              onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
-            />
-          )}
+          </div>
+          {/* Content area - error, map or details */}
+          <div className="flex-1 min-h-0 overflow-hidden">
+            {error ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-red-400 mb-4">{error}</p>
+                  <button
+                    onClick={() => setError(null)}
+                    className="px-4 py-2 bg-pokedex-red rounded-lg hover:bg-red-700 transition-all"
+                  >
+                    Tentar Novamente
+                  </button>
+                </div>
+              </div>
+            ) : viewMode === "map" ? (
+              <CaptureMap captures={captures} />
+            ) : (
+              <PokemonCentralDisplay
+                data={pokemonData}
+                onOpenCamera={handleOpenCamera}
+                isLoading={isLoadingPokemon}
+                canGenerateDescription={canGenerateDescription()}
+                descriptionsRemaining={descriptionsRemaining}
+                onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
+              />
+            )}
+          </div>
         </div>
 
         {/* Right Sidebar - Info Cards */}
