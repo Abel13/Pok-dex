@@ -132,10 +132,6 @@ export default function Pokedex() {
   };
 
   const handleSelectPokemon = async (id: number) => {
-    if (!canAccessPokemon(id)) {
-      setIsUpgradeModalOpen(true);
-      return;
-    }
     unlockSpeechForMobile();
     setSelectedPokemonId(id);
     setError(null);
@@ -210,12 +206,6 @@ export default function Pokedex() {
       }
 
       const data: PokemonData = await pokemonResponse.json();
-
-      if (!canAccessPokemon(data.pokemon.id)) {
-        setCaptureError("Pokémon #152+ não disponível nesta versão.");
-        setIsUpgradeModalOpen(true);
-        return;
-      }
 
       // Get geolocation if available
       let location: { lat: number; lng: number } | undefined;

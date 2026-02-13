@@ -3,7 +3,6 @@ export const PLAN_LIMITS = {
     DAILY_SCANS: 10,
     TOTAL_SCANNED: 50,
     MONTHLY_DESCRIPTIONS: 20,
-    MAX_POKEMON_ID: 151,
   },
 } as const;
 

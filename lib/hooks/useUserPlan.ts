@@ -136,7 +136,7 @@ export function useUserPlan() {
     [planData.monthlyDescriptions]
   );
 
-  const canAccessPokemon = useCallback((id: number) => id <= LIMITS.MAX_POKEMON_ID, []);
+  const canAccessPokemon = useCallback((_id: number) => true, []);
 
   const incrementUsage = useCallback(
     (type: "scan" | "description") => {

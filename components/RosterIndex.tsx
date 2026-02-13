@@ -32,7 +32,7 @@ export default function RosterIndex({
   const [loading, setLoading] = useState(true);
   const [listFilter, setListFilter] = useState<"all" | "scanned">("all");
 
-  const dynamicLimit = 151; // Kanto apenas
+  const dynamicLimit = 1025;
 
   useEffect(() => {
     setLoading(true);
@@ -226,7 +226,7 @@ export default function RosterIndex({
                     }
                   }}
                   disabled={!selectable}
-                  title={!scanned ? "Escaneie este Pokémon primeiro" : !canAccess ? "Pokémon #152+ não disponível" : undefined}
+                  title={!scanned ? "Escaneie este Pokémon primeiro" : undefined}
                   className={`w-full p-3 flex items-center gap-3 transition-all ${
                     selectable
                       ? "hover:bg-pokedex-blue-light/10 cursor-pointer"
@@ -255,11 +255,6 @@ export default function RosterIndex({
                     </p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    {scanned && !canAccess && (
-                      <span className="text-[10px] font-bold text-gray-500 px-1">
-                        🔒
-                      </span>
-                    )}
                     <span className="text-lg">{selectable ? "⚡" : "🔒"}</span>
                   </div>
                 </button>
