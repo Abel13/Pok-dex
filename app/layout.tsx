@@ -39,8 +39,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   userScalable: false,
   maximumScale: 1,
-  themeColor: "#3B82F6", // Primary color do tema customizado
-  viewportFit: "cover",
+  themeColor: "#3B82F6",
+  viewportFit: "contain",
 };
 
 export default function RootLayout({
