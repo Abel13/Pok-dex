@@ -1,11 +1,14 @@
 {
   "name": "Pokédex PWA",
   "short_name": "Pokédex",
-  "description": "Pokédex futurista com reconhecimento por câmera",
-  "start_url": "/",
+  "description": "Pokédex com reconhecimento por IA",
+  "start_url": "https://pdexai.vercel.app/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "dir": "ltr",
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",
