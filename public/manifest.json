@@ -9,6 +9,44 @@
   "orientation": "portrait",
   "lang": "pt-BR",
   "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "screenshot_1.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    },
+    {
+      "src": "screenshot_2.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    },
+    {
+      "src": "screenshot_3.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    },
+    {
+      "src": "screenshot_4.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    },
+    {
+      "src": "screenshot_5.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    },
+    {
+      "src": "screenshot_6.PNG",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "platform": "iOS"
+    }
+  ],
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",
