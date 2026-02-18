@@ -66,12 +66,11 @@ export async function generateAnimeDescription(
 
 Informações do Pokémon:
 - Tipos: ${data.types.join(", ")}
-- Habilidades: ${data.abilities.join(", ")}
 - Stats principais: ${statsText}
 ${data.isLegendary ? "- É um Pokémon Lendário" : ""}
 ${data.isMythical ? "- É um Pokémon Mítico" : ""}
 
-Formato: Comece com "${data.pokemonName}, o Pokémon ${data.types[0]}." seguido de uma descrição narrativa e envolvente no estilo da Pokédex do anime, mencionando características físicas, comportamento, habitat e curiosidades. Seja entusiasmado e descritivo, como o Professor Carvalho ou a Pokédex do anime. A descrição deve ter entre 100 e 200 palavras, ser natural para leitura em voz alta e capturar a essência do Pokémon como na série animada.
+Formato: Comece com "${data.pokemonName}, o Pokémon ${data.types[0]}." seguido de uma descrição narrativa e envolvente no estilo da Pokédex do anime, mencionando comportamento, habitat e curiosidades. Seja entusiasmado e descritivo, como a Pokédex do anime. A descrição deve ter entre 50 e 100 palavras, ser natural para leitura em voz alta e capturar a essência do Pokémon como na série animada.
 
 Traduza todo o texto para português`;
 

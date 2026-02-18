@@ -6,7 +6,9 @@ const LIMITS = PLAN_LIMITS.FREE;
 
 function getIdentifier(userId: string | null, ip: string): string {
   if (userId) return `user:${userId}`;
-  const hash = createHash("sha256").update(ip || "unknown").digest("hex");
+  const hash = createHash("sha256")
+    .update(ip || "unknown")
+    .digest("hex");
   return `ip:${hash}`;
 }
 
@@ -27,8 +29,10 @@ export interface UsageState {
 export async function getAndValidateUsage(
   request: Request,
   userId: string | null,
-  type: "scan" | "description"
-): Promise<{ ok: true; usage: UsageState } | { ok: false; error: string; code: string }> {
+  type: "scan" | "description",
+): Promise<
+  { ok: true; usage: UsageState } | { ok: false; error: string; code: string }
+> {
   const ip = getClientIp(request);
   const identifier = getIdentifier(userId, ip);
   const today = new Date().toISOString().slice(0, 10);
@@ -38,12 +42,14 @@ export async function getAndValidateUsage(
 
   const { data: row } = await supabase
     .from("usage")
-    .select("last_date, daily_scans, total_scanned, last_month, monthly_descriptions")
+    .select(
+      "last_date, daily_scans, total_scanned, last_month, monthly_descriptions",
+    )
     .eq("identifier", identifier)
     .single();
 
   let dailyScans = row?.daily_scans ?? 0;
-  let totalScanned = row?.total_scanned ?? 0;
+  const totalScanned = row?.total_scanned ?? 0;
   let monthlyDescriptions = row?.monthly_descriptions ?? 0;
   const lastDate = row?.last_date ?? today;
   const lastMonth = row?.last_month ?? currentMonth;
@@ -59,14 +65,16 @@ export async function getAndValidateUsage(
     if (dailyScans >= LIMITS.DAILY_SCANS) {
       return {
         ok: false,
-        error: "Limite diário de identificações atingido. Apoie o projeto para continuar.",
+        error:
+          "Limite diário de identificações atingido. Apoie o projeto para continuar.",
         code: "DAILY_LIMIT",
       };
     }
     if (totalScanned >= LIMITS.TOTAL_SCANNED) {
       return {
         ok: false,
-        error: "Limite de Pokémon escaneados atingido. Apoie o projeto para continuar.",
+        error:
+          "Limite de Pokémon escaneados atingido. Apoie o projeto para continuar.",
         code: "TOTAL_LIMIT",
       };
     }
@@ -74,7 +82,8 @@ export async function getAndValidateUsage(
     if (monthlyDescriptions >= LIMITS.MONTHLY_DESCRIPTIONS) {
       return {
         ok: false,
-        error: "Limite mensal de descrições atingido. Apoie o projeto para continuar.",
+        error:
+          "Limite mensal de descrições atingido. Apoie o projeto para continuar.",
         code: "MONTHLY_LIMIT",
       };
     }
@@ -93,7 +102,7 @@ export async function getAndValidateUsage(
 export async function incrementUsage(
   userId: string | null,
   ip: string,
-  type: "scan" | "description"
+  type: "scan" | "description",
 ): Promise<UsageState> {
   const identifier = getIdentifier(userId, ip);
   const today = new Date().toISOString().slice(0, 10);
@@ -104,7 +113,9 @@ export async function incrementUsage(
 
   const { data: row } = await supabase
     .from("usage")
-    .select("last_date, daily_scans, total_scanned, last_month, monthly_descriptions")
+    .select(
+      "last_date, daily_scans, total_scanned, last_month, monthly_descriptions",
+    )
     .eq("identifier", identifier)
     .single();
 
@@ -140,7 +151,7 @@ export async function incrementUsage(
       monthly_descriptions: monthlyDescriptions,
       updated_at: now,
     },
-    { onConflict: "identifier" }
+    { onConflict: "identifier" },
   );
 
   return { dailyScans, totalScanned, monthlyDescriptions };
