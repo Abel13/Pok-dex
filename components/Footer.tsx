@@ -5,7 +5,9 @@ import { useState, useEffect } from "react";
 const BUYMECOFFEE_USERNAME = process.env.NEXT_PUBLIC_BUYMECOFFEE_USERNAME;
 
 export default function Footer() {
-  const [coordinates, setCoordinates] = useState<string>("34.0522° N, 118.2437° W");
+  const [coordinates, setCoordinates] = useState<string>(
+    "34.0522° N, 118.2437° W",
+  );
   const [latency, setLatency] = useState<number>(14);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function Footer() {
         },
         () => {
           // Keep default if geolocation fails
-        }
+        },
       );
     }
 
@@ -51,21 +53,6 @@ export default function Footer() {
           {/* Right: Encryption and Sync */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-gray-400">ENCRYPTION:</span>
-              <span className="text-pokedex-purple">AES-256</span>
-              <svg
-                className="w-4 h-4 text-pokedex-purple"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span className="text-pokedex-cyan">LIVE_SYNC</span>
             </div>
@@ -88,9 +75,7 @@ export default function Footer() {
               />
             </a>
           )}
-          <p className="text-xs text-gray-500">
-            © 2024 PDEXAI_ENTERPRISE
-          </p>
+          <p className="text-xs text-gray-500">© 2026 PDEXAI</p>
         </div>
       </div>
     </footer>

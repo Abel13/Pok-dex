@@ -116,29 +116,8 @@ export default function Header({
               />
             </div>
           </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-4 flex-shrink-0 w-full md:w-auto justify-between md:justify-end">
-            {isLoggedIn && onSignOut ? (
-              <button
-                onClick={onSignOut}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white border border-pokedex-blue-light/30 hover:border-pokedex-blue-light/50 transition-all"
-                title="Sair"
-              >
-                SAIR
-              </button>
-            ) : (
-              onOpenAuth && (
-                <button
-                  onClick={onOpenAuth}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-pokedex-gray/50 hover:bg-pokedex-gray border border-pokedex-blue-light/30 text-pokedex-cyan hover:text-white transition-all"
-                  title="Entrar"
-                >
-                  ENTRAR
-                </button>
-              )
-            )}
-          </div>
+          <div />
+          <div />
         </div>
       </div>
     </header>
