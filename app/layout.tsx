@@ -5,6 +5,7 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { SupabaseProvider } from "@/components/SupabaseProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({
             <ServiceWorkerRegistration />
             <PWAInstallBanner />
             {children}
+            <Analytics />
           </SupabaseProvider>
         </ErrorBoundary>
       </body>
