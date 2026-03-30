@@ -3,7 +3,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { PokemonListItem } from "@/lib/pokeapi";
-import { POKEMON_NAMES_PT_BY_ID } from "@/lib/translations";
+import {
+  POKEMON_NAMES_PT_BY_ID,
+  TYPE_NAMES_PT,
+  getTypeEmoji,
+} from "@/lib/translations";
 
 interface RosterIndexProps {
   searchQuery: string;
@@ -76,11 +80,6 @@ export default function RosterIndex({
 
     return list;
   }, [pokemonList, searchQuery, listFilter, isScanned]);
-
-  const getTypeIcon = (types: string[]) => {
-    // Simplified - in real implementation, would fetch actual types
-    return "⚡";
-  };
 
   // Scroll to selected Pokémon when selection changes
   useEffect(() => {
@@ -255,7 +254,19 @@ export default function RosterIndex({
                     </p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <span className="text-lg">{selectable ? "⚡" : "🔒"}</span>
+                    {selectable ? (
+                      <span
+                        className="text-lg"
+                        title={`Tipo: ${TYPE_NAMES_PT[pokemon.primaryType] ?? pokemon.primaryType}`}
+                        aria-label={`Tipo ${TYPE_NAMES_PT[pokemon.primaryType] ?? pokemon.primaryType}`}
+                      >
+                        {getTypeEmoji(pokemon.primaryType)}
+                      </span>
+                    ) : (
+                      <span className="text-lg" aria-hidden="true">
+                        🔒
+                      </span>
+                    )}
                   </div>
                 </button>
               );

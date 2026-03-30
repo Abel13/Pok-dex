@@ -107,6 +107,41 @@ export interface PokemonListItem {
   id: number;
   name: string;
   sprite: string;
+  primaryType: string;
+}
+
+const LIST_DETAIL_BATCH_SIZE = 50;
+
+async function fetchPrimaryType(id: number): Promise<string> {
+  const response = await fetch(`${POKEAPI_BASE}/pokemon/${id}`, {
+    next: { revalidate: 3600 },
+  });
+  if (!response.ok) {
+    return "normal";
+  }
+  const detail: {
+    types?: { slot: number; type: { name: string } }[];
+  } = await response.json();
+  const primary = detail.types?.find((t) => t.slot === 1);
+  return (
+    primary?.type?.name ??
+    detail.types?.[0]?.type?.name ??
+    "normal"
+  );
+}
+
+async function mapInBatches<T, R>(
+  items: T[],
+  batchSize: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const slice = items.slice(i, i + batchSize);
+    const chunk = await Promise.all(slice.map(mapper));
+    out.push(...chunk);
+  }
+  return out;
 }
 
 export async function getPokemonList(limit: number = 151, offset: number = 0): Promise<{
@@ -124,20 +159,31 @@ export async function getPokemonList(limit: number = 151, offset: number = 0): P
     throw new Error("Failed to fetch Pokémon list");
   }
 
-  const data = await response.json();
-  
-  // Fetch sprites for each Pokémon
-  const results = await Promise.all(
-    data.results.map(async (pokemon: { name: string; url: string }) => {
-      const id = parseInt(pokemon.url.split("/").slice(-2, -1)[0]);
+  const data: {
+    results: { name: string; url: string }[];
+    count: number;
+  } = await response.json();
+
+  const entries: { id: number; name: string }[] = data.results.map(
+    (pokemon: { name: string; url: string }) => {
+      const id = parseInt(pokemon.url.split("/").slice(-2, -1)[0], 10);
+      return { id, name: pokemon.name };
+    },
+  );
+
+  const results: PokemonListItem[] = await mapInBatches(
+    entries,
+    LIST_DETAIL_BATCH_SIZE,
+    async ({ id, name }): Promise<PokemonListItem> => {
+      const primaryType = await fetchPrimaryType(id);
       const sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-      
       return {
         id,
-        name: pokemon.name,
+        name,
         sprite,
+        primaryType,
       };
-    })
+    },
   );
 
   return {

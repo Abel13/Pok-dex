@@ -19,6 +19,33 @@ export const TYPE_NAMES_PT: Record<string, string> = {
   fairy: "Fada",
 };
 
+/** Emoji aproximado por tipo PokeAPI (nome em inglês). Fallback em getTypeEmoji. */
+export const TYPE_EMOJI: Record<string, string> = {
+  normal: "⚪",
+  fire: "🔥",
+  water: "💧",
+  electric: "⚡",
+  grass: "🌿",
+  ice: "❄️",
+  fighting: "👊",
+  poison: "☠️",
+  ground: "🟤",
+  flying: "🪶",
+  psychic: "🔮",
+  bug: "🐛",
+  rock: "🪨",
+  ghost: "👻",
+  dragon: "🐉",
+  dark: "🌑",
+  steel: "⚙️",
+  fairy: "✨",
+  stellar: "⭐",
+};
+
+export function getTypeEmoji(pokeApiTypeName: string): string {
+  return TYPE_EMOJI[pokeApiTypeName] ?? "❓";
+}
+
 export const STAT_NAMES_PT: Record<string, string> = {
   hp: "HP",
   attack: "ATAQUE",
