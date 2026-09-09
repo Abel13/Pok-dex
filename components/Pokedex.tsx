@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Header from "./Header";
 import RosterIndex from "./RosterIndex";
@@ -34,6 +34,8 @@ export default function Pokedex() {
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"details" | "map">("details");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
   const { scannedIds, captures, addScannedPokemon, isScanned } =
     useScannedPokemon();
   const {
@@ -57,6 +59,33 @@ export default function Pokedex() {
     }
   }, [refetchPlan]);
 
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  const stopCurrentSpeech = () => {
+    if ("speechSynthesis" in window) {
+      speechSynthesis.cancel();
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+  };
+
   const unlockSpeechForMobile = () => {
     if ("speechSynthesis" in window) {
       const u = new SpeechSynthesisUtterance(" ");
@@ -65,25 +94,60 @@ export default function Pokedex() {
     }
   };
 
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window && text?.trim()) {
-      speechSynthesis.cancel();
-      if (speechSynthesis.paused) {
-        speechSynthesis.resume();
+  const speakWithBrowser = (text: string) => {
+    if (!("speechSynthesis" in window) || !text?.trim()) return;
+    stopCurrentSpeech();
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+    speechSynthesis.speak(utterance);
+  };
+
+  const speak = async (text: string) => {
+    const trimmed = text?.trim();
+    if (!trimmed) return;
+
+    stopCurrentSpeech();
+
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmed }),
+      });
+
+      if (!response.ok) {
+        throw new Error("TTS request failed");
       }
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "pt-BR";
-      utterance.rate = 0.95;
-      utterance.pitch = 1.1;
-      utterance.volume = 1.0;
-      speechSynthesis.speak(utterance);
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
+
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (audioUrlRef.current === url) {
+          URL.revokeObjectURL(url);
+          audioUrlRef.current = null;
+          audioRef.current = null;
+        }
+      };
+      await audio.play();
+    } catch {
+      speakWithBrowser(trimmed);
     }
   };
 
   const generateAndSpeakDescription = async (data: PokemonData) => {
     const types = data.pokemon.types.map((t) => t.type.name);
     if (!canGenerateDescription()) {
-      speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
+      await speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
       setIsUpgradeModalOpen(true);
       return;
     }
@@ -113,17 +177,17 @@ export default function Pokedex() {
       if (describeResponse.ok) {
         const json = await describeResponse.json();
         if (json.usage) updateUsageFromServer(json.usage);
-        speak(json.description);
+        await speak(json.description);
       } else if (describeResponse.status === 429) {
-        const json = await describeResponse.json().catch(() => ({}));
-        speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
+        await describeResponse.json().catch(() => ({}));
+        await speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
         setIsUpgradeModalOpen(true);
       } else {
-        speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
+        await speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
       }
     } catch (err) {
       const types = data.pokemon.types.map((t) => t.type.name);
-      speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
+      await speak(`${data.pokemon.name}, o Pokémon ${types[0]}.`);
     }
   };
 

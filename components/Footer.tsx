@@ -75,7 +75,9 @@ export default function Footer() {
               />
             </a>
           )}
-          <p className="text-xs text-gray-500">© 2026 PDEXAI</p>
+          <p className="text-xs text-gray-500">
+            © 2026 PDEXAI · Voz gerada por IA
+          </p>
         </div>
       </div>
     </footer>

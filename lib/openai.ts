@@ -97,3 +97,49 @@ Traduza todo o texto para português`;
 
   return description;
 }
+
+export const TTS_VOICES = [
+  "alloy",
+  "ash",
+  "ballad",
+  "coral",
+  "echo",
+  "fable",
+  "nova",
+  "onyx",
+  "sage",
+  "shimmer",
+  "verse",
+  "marin",
+  "cedar",
+] as const;
+
+export type TtsVoice = (typeof TTS_VOICES)[number];
+
+const TTS_MAX_INPUT_CHARS = 4096;
+const DEFAULT_TTS_VOICE: TtsVoice = "coral";
+const POKEDEX_TTS_INSTRUCTIONS =
+  "Fale como a Pokédex do anime Pokémon em português brasileiro: clara, analítica, ritmo de catálogo, tom de dispositivo eletrônico, sem dramaticidade teatral.";
+
+export function isTtsVoice(value: string): value is TtsVoice {
+  return (TTS_VOICES as readonly string[]).includes(value);
+}
+
+export async function synthesizeSpeech(
+  text: string,
+  voice: TtsVoice = DEFAULT_TTS_VOICE,
+): Promise<Buffer> {
+  const input = text.trim().slice(0, TTS_MAX_INPUT_CHARS);
+  if (!input) {
+    throw new Error("TTS input text is empty");
+  }
+
+  const response = await openai.audio.speech.create({
+    model: "gpt-4o-mini-tts",
+    voice,
+    input,
+    instructions: POKEDEX_TTS_INSTRUCTIONS,
+  });
+
+  return Buffer.from(await response.arrayBuffer());
+}
