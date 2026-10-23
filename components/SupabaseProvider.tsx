@@ -55,7 +55,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
 export function useSupabase() {
   const context = useContext(SupabaseContext);
   if (!context) {
-    throw new Error("useSupabase must be used within SupabaseProvider");
+    throw new Error("useSupabase deve ser usado dentro de SupabaseProvider");
   }
   return context;
 }

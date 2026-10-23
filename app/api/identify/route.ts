@@ -9,14 +9,14 @@ export async function POST(request: NextRequest) {
 
     if (!image) {
       return NextResponse.json(
-        { error: "Image is required" },
+        { error: "A imagem é obrigatória" },
         { status: 400 }
       );
     }
 
     if (typeof image !== "string" || image.length < 100) {
       return NextResponse.json(
-        { error: "Invalid image format" },
+        { error: "Formato de imagem inválido" },
         { status: 400 }
       );
     }

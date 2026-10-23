@@ -33,30 +33,46 @@ export default function VisorCamera({
 
   // Auto-start camera on mount
   useEffect(() => {
-    startCamera();
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+    let mediaStream: MediaStream | null = null;
+    let cancelled = false;
+
+    const startCamera = async () => {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
+
+        if (cancelled) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
+        setStream(mediaStream);
+        setIsActive(true);
+        setError(null);
+      } catch (err) {
+        if (!cancelled) {
+          setError("Não foi possível acessar a câmera. Verifique as permissões.");
+          console.error("Camera error:", err);
+        }
       }
+    };
+
+    void startCamera();
+
+    return () => {
+      cancelled = true;
+      mediaStream?.getTracks().forEach((track) => track.stop());
     };
   }, []);
-
-  useEffect(() => {
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, [stream]);
 
   // Setup video when stream is available and video ref is ready
   useEffect(() => {
     if (stream && videoRef.current && isActive) {
       const video = videoRef.current;
       video.srcObject = stream;
-      setIsVideoReady(false);
 
-      let timeouts: NodeJS.Timeout[] = [];
+      const timeouts: NodeJS.Timeout[] = [];
 
       const checkVideoReady = () => {
         if (videoRef.current) {
@@ -90,37 +106,6 @@ export default function VisorCamera({
       };
     }
   }, [stream, isActive]);
-
-  // Limpar imagem quando identificação terminar
-  useEffect(() => {
-    if (!isIdentifying && capturedImage) {
-      setCapturedImage(null);
-    }
-  }, [isIdentifying, capturedImage]);
-
-  const startCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-
-      setStream(mediaStream);
-      setIsActive(true);
-      setError(null);
-    } catch (err) {
-      setError("Não foi possível acessar a câmera. Verifique as permissões.");
-      console.error("Camera error:", err);
-    }
-  };
-
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-      setIsActive(false);
-      setIsVideoReady(false);
-    }
-  };
 
   const captureFrame = () => {
     if (!videoRef.current || !canvasRef.current) {
@@ -208,7 +193,7 @@ export default function VisorCamera({
           <div className="w-16 h-16 border-4 border-pokedex-blue-light/30 rounded-full animate-pulse-scan"></div>
 
           <p className="mt-20 text-pokedex-cyan text-sm font-mono animate-bounce">
-            INITIALIZING...
+            INICIALIZANDO...
           </p>
         </div>
       )}
@@ -283,12 +268,12 @@ export default function VisorCamera({
           </div>
           {!canScan && scansRemaining < Infinity && (
             <span className="text-xs font-mono text-amber-400">
-              SCANS TODAY: {scansRemaining}/10 — APOIE O PROJETO
+              ESCANEAMENTOS DISPONÍVEIS: {scansRemaining}/10 — APOIE O PROJETO
             </span>
           )}
           {canScan && scansRemaining < Infinity && (
             <span className="text-xs font-mono text-pokedex-cyan">
-              SCANS REMAINING: {scansRemaining}
+              ESCANEAMENTOS RESTANTES: {scansRemaining}
             </span>
           )}
         </div>

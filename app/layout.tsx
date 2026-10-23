@@ -23,10 +23,9 @@ export const metadata: Metadata = {
   title: "Pokédex PWA",
   description: "Pokédex futurista com reconhecimento por câmera",
   manifest: "/manifest.json",
-  themeColor: "#3b82f6",
   icons: {
-    icon: "/icon-192x192.png",
-    apple: "/icon-192x192.png",
+    icon: "/manifest-icon-192.maskable.png",
+    apple: "/apple-icon-180.png",
   },
   appleWebApp: {
     capable: true,

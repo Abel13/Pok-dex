@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       weight === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Campos obrigatórios ausentes" },
         { status: 400 }
       );
     }

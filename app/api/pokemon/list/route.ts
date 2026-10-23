@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching Pokémon list:", error);
     return NextResponse.json(
-      { error: "Failed to fetch Pokémon list" },
+      { error: "Falha ao buscar a lista de Pokémon" },
       { status: 500 }
     );
   }

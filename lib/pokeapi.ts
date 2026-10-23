@@ -16,7 +16,7 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
     });
     
     if (!response.ok) {
-      throw new Error(`Pokémon not found: ${nameOrId}`);
+      throw new Error(`Pokémon não encontrado: ${nameOrId}`);
     }
     
     return response.json();
@@ -24,7 +24,7 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
 
   // Normalize Pokémon name for PokeAPI
   // Examples: "Mr. Mime" -> "mr-mime", "Nidoran♀" -> "nidoran-f", etc.
-  let normalizedName = nameOrId
+  const normalizedName = nameOrId
     .toLowerCase()
     .trim()
     .replace(/[♀]/g, "-f")
@@ -39,7 +39,7 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
   });
   
   if (!response.ok) {
-    throw new Error(`Pokémon not found: ${nameOrId}`);
+    throw new Error(`Pokémon não encontrado: ${nameOrId}`);
   }
   
   return response.json();
@@ -51,7 +51,7 @@ export async function getPokemonSpecies(id: number): Promise<PokemonSpecies> {
   });
   
   if (!response.ok) {
-    throw new Error(`Pokémon species not found: ${id}`);
+    throw new Error(`Espécie do Pokémon não encontrada: ${id}`);
   }
   
   return response.json();
@@ -63,10 +63,26 @@ export async function getEvolutionChain(url: string): Promise<EvolutionChain> {
   });
   
   if (!response.ok) {
-    throw new Error(`Evolution chain not found`);
+    throw new Error("Cadeia de evolução não encontrada");
   }
   
   return response.json();
+}
+
+async function getLocalizedAbilityName(url: string, fallback: string): Promise<string> {
+  try {
+    const response = await fetch(url, { next: { revalidate: 86400 } });
+    if (!response.ok) return fallback;
+    const ability: {
+      names?: { name: string; language: { name: string } }[];
+    } = await response.json();
+    return (
+      ability.names?.find((entry) => entry.language.name === POKEAPI_LANG)?.name ??
+      fallback
+    );
+  } catch {
+    return fallback;
+  }
 }
 
 export async function getPokemonData(nameOrId: string | number): Promise<PokemonData> {
@@ -79,13 +95,20 @@ export async function getPokemonData(nameOrId: string | number): Promise<Pokemon
   }
   
   if (!evolutionChain) {
-    throw new Error("Evolution chain not available");
+    throw new Error("Cadeia de evolução indisponível");
   }
+
+  const abilityNames = await Promise.all(
+    (pokemon.abilities ?? []).map(({ ability }, index) =>
+      getLocalizedAbilityName(ability.url, `Habilidade ${index + 1}`),
+    ),
+  );
 
   const localized = {
     displayName: getLocalizedName(species.names, POKEAPI_LANG) || pokemon.name,
     genus: getLocalizedGenus(species.genera, POKEAPI_LANG),
     flavorText: getLocalizedFlavorText(species.flavor_text_entries, POKEAPI_LANG),
+    abilityNames,
   };
 
   return {
@@ -156,7 +179,7 @@ export async function getPokemonList(limit: number = 151, offset: number = 0): P
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon list");
+    throw new Error("Falha ao buscar a lista de Pokémon");
   }
 
   const data: {

@@ -1,9 +1,9 @@
 // PWA service worker — network-first so clients pick up new deploys.
-const CACHE_VERSION = "pdexai-v2";
+const CACHE_VERSION = "pdexai-v3";
 const OFFLINE_URL = "/offline.html";
 const PRECACHE_ASSETS = [
   OFFLINE_URL,
-  "/icons/manifest-icon-192.maskable.png",
+  "/manifest-icon-192.maskable.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -67,7 +67,8 @@ self.addEventListener("fetch", (event) => {
         if (
           networkResponse.ok &&
           (url.pathname === OFFLINE_URL ||
-            url.pathname.startsWith("/icons/"))
+            url.pathname === "/manifest-icon-192.maskable.png" ||
+            url.pathname === "/manifest-icon-512.maskable.png")
         ) {
           cache.put(request, networkResponse.clone());
         }

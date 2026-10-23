@@ -98,6 +98,7 @@ export interface PokemonData {
     displayName: string;
     genus: string;
     flavorText: string;
+    abilityNames: string[];
   };
 }
 

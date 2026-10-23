@@ -122,7 +122,7 @@ export default function Pokedex() {
       });
 
       if (!response.ok) {
-        throw new Error("TTS request failed");
+        throw new Error("Falha ao gerar a narração");
       }
 
       const blob = await response.blob();
@@ -206,7 +206,7 @@ export default function Pokedex() {
       const response = await fetch(`/api/pokemon/${id}`);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch Pokémon data");
+        throw new Error("Falha ao buscar os dados do Pokémon");
       }
 
       const data: PokemonData = await response.json();
@@ -278,7 +278,7 @@ export default function Pokedex() {
           const position = await new Promise<GeolocationPosition>(
             (resolve, reject) => {
               const timeout = setTimeout(() => {
-                reject(new Error("Geolocation timeout"));
+                reject(new Error("Tempo limite da localização excedido"));
               }, 5000);
 
               navigator.geolocation.getCurrentPosition(
@@ -314,11 +314,10 @@ export default function Pokedex() {
       setPokemonData(data);
       setSelectedPokemonId(data.pokemon.id);
 
-      // Generate and speak anime-style description
-      await generateAndSpeakDescription(data);
-
-      // Close camera modal after successful identification
+      // Finish the capture as soon as identification succeeds. Description and
+      // speech are optional follow-up work and must not keep the camera locked.
       setIsCameraOpen(false);
+      void generateAndSpeakDescription(data);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erro desconhecido";
@@ -491,8 +490,8 @@ export default function Pokedex() {
                     ? "bg-pokedex-cyan text-black border-pokedex-cyan"
                     : "bg-pokedex-gray/80 text-gray-400 border-pokedex-gray hover:border-pokedex-cyan/50 hover:text-pokedex-cyan"
                 }`}
-                title="Info"
-                aria-label="Abrir ou fechar painel Info"
+                title="Informações"
+                aria-label="Abrir ou fechar painel de informações"
               >
                 <svg
                   className="w-5 h-5"

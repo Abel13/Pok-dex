@@ -2,7 +2,7 @@
 
 import { PokemonData } from "@/lib/types";
 import EvolutionChain from "./EvolutionChain";
-import { STAT_NAMES_PT } from "@/lib/translations";
+import { POKEMON_NAMES_PT_BY_ID, STAT_NAMES_PT, TYPE_NAMES_PT } from "@/lib/translations";
 import { getLocalizedFlavorText } from "@/lib/i18n";
 import { POKEAPI_LANG } from "@/lib/i18n";
 
@@ -21,7 +21,7 @@ function getPokemonRegion(id: number): string {
   if (id >= 722 && id <= 809) return "Alola";
   if (id >= 810 && id <= 905) return "Galar";
   if (id >= 906 && id <= 1025) return "Paldea";
-  return "Unknown";
+  return "Desconhecida";
 }
 
 export default function InfoCards({ data, onClose }: InfoCardsProps) {
@@ -29,7 +29,7 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
     return (
       <div className="w-full h-full bg-pokedex-gray/30 border-l border-pokedex-blue-light/30 p-4">
         <div className="text-center text-gray-400 text-sm mt-8">
-          Select a Pokémon to view details
+          Selecione um Pokémon para ver os detalhes
         </div>
       </div>
     );
@@ -40,7 +40,7 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
   const flavorText =
     data.localized?.flavorText ||
     getLocalizedFlavorText(species.flavor_text_entries, POKEAPI_LANG) ||
-    "Nenhuma descrição disponível.";
+    `${data.localized?.displayName || pokemon.name} é um Pokémon do tipo ${TYPE_NAMES_PT[pokemon.types[0]?.type.name] || "desconhecido"}.`;
 
   const statColors: Record<string, string> = {
     attack: "bg-blue-500",
@@ -58,9 +58,18 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
 
   // Get evolution info for Recent Activity
   const hasEvolutions = data.evolutionChain.chain.evolves_to.length > 0;
+  const firstEvolution = data.evolutionChain.chain.evolves_to[0];
+  const baseId = Number(data.evolutionChain.chain.species.url.split("/").slice(-2, -1)[0]);
+  const evolutionId = firstEvolution
+    ? Number(firstEvolution.species.url.split("/").slice(-2, -1)[0])
+    : 0;
+  const baseName = POKEMON_NAMES_PT_BY_ID[baseId] ||
+    data.evolutionChain.chain.species.name.replace(/^./, (letter) => letter.toUpperCase());
+  const evolutionName = POKEMON_NAMES_PT_BY_ID[evolutionId] ||
+    firstEvolution?.species.name.replace(/^./, (letter) => letter.toUpperCase());
   const evolutionText = hasEvolutions
-    ? `Evolution Path Detected: ${data.evolutionChain.chain.species.name} → ${data.evolutionChain.chain.evolves_to[0].species.name}`
-    : "No evolution path detected";
+    ? `Caminho evolutivo detectado: ${baseName} → ${evolutionName}`
+    : "Nenhum caminho evolutivo detectado";
 
   return (
     <div className="w-full h-full bg-pokedex-gray/30 overflow-y-auto flex flex-col">
@@ -68,12 +77,12 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
       {onClose && (
         <div className="lg:hidden p-4 border-b border-pokedex-blue-light/30 flex-shrink-0 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white font-tech text-glow-blue">
-            POKÉMON INFO
+            INFORMAÇÕES DO POKÉMON
           </h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg bg-pokedex-gray/50 border border-pokedex-blue-light/30 text-pokedex-blue-light hover:glow-blue transition-all"
-            aria-label="Close Menu"
+            aria-label="Fechar painel de informações"
           >
             <svg
               className="w-5 h-5"
@@ -109,14 +118,14 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
               />
             </svg>
             <h3 className="text-sm font-bold text-white font-tech text-glow-blue">
-              TECHNICAL SPECS
+              ESPECIFICAÇÕES TÉCNICAS
             </h3>
           </div>
 
           {/* Species Profile */}
           <div className="mb-4">
             <h4 className="text-xs text-gray-400 mb-2 font-mono">
-              SPECIES PROFILE
+              PERFIL DA ESPÉCIE
             </h4>
             <p className="text-xs text-gray-300 leading-relaxed">
               {flavorText.replace(/\f/g, " ")}
@@ -126,13 +135,13 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
           {/* Height and Weight */}
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-pokedex-dark/50 border border-pokedex-blue-light/20 rounded p-3">
-              <p className="text-xs text-gray-400 mb-1 font-mono">HEIGHT</p>
+              <p className="text-xs text-gray-400 mb-1 font-mono">ALTURA</p>
               <p className="text-lg font-bold text-white">
                 {pokemon.height / 10}m
               </p>
             </div>
             <div className="bg-pokedex-dark/50 border border-pokedex-blue-light/20 rounded p-3">
-              <p className="text-xs text-gray-400 mb-1 font-mono">WEIGHT</p>
+              <p className="text-xs text-gray-400 mb-1 font-mono">PESO</p>
               <p className="text-lg font-bold text-white">
                 {pokemon.weight / 10}kg
               </p>
@@ -157,7 +166,7 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
               />
             </svg>
             <h3 className="text-sm font-bold text-white font-tech text-glow-purple">
-              COMBAT EFFECTIVENESS
+              EFICIÊNCIA EM COMBATE
             </h3>
           </div>
 
@@ -204,7 +213,7 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
               />
             </svg>
             <h3 className="text-sm font-bold text-white font-tech text-glow-cyan">
-              RECENT ACTIVITY
+              ATIVIDADE RECENTE
             </h3>
           </div>
 
@@ -218,13 +227,13 @@ export default function InfoCards({ data, onClose }: InfoCardsProps) {
             <li className="flex items-start gap-2">
               <span className="text-pokedex-blue-light mt-1">●</span>
               <p className="text-xs text-gray-300">
-                Database Entry Updated - {getPokemonRegion(pokemon.id)} Region
+                Registro atualizado no banco de dados — Região de {getPokemonRegion(pokemon.id)}
               </p>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-pokedex-cyan mt-1">●</span>
               <p className="text-xs text-gray-300">
-                Species Data Synchronized
+                Dados da espécie sincronizados
               </p>
             </li>
           </ul>

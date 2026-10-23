@@ -97,7 +97,7 @@ export default function RosterIndex({
     return (
       <div className="w-full h-full bg-pokedex-gray/30 border-r border-pokedex-blue-light/30 p-4">
         <div className="flex items-center justify-center h-full">
-          <div className="text-pokedex-cyan text-sm">LOADING DATABASE...</div>
+          <div className="text-pokedex-cyan text-sm">CARREGANDO BANCO DE DADOS...</div>
         </div>
       </div>
     );
@@ -109,14 +109,14 @@ export default function RosterIndex({
       <div className="p-4 border-b border-pokedex-blue-light/30 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white font-tech text-glow-blue">
-            ROSTER INDEX
+            LISTA DE POKÉMON
           </h2>
           <div className="flex items-center gap-2">
             {onClose && (
               <button
                 onClick={onClose}
                 className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-pokedex-gray/50 border border-pokedex-blue-light/30 text-pokedex-blue-light hover:glow-blue transition-all"
-                aria-label="Close Menu"
+                aria-label="Fechar lista"
               >
                 <svg
                   className="w-5 h-5"
@@ -171,7 +171,7 @@ export default function RosterIndex({
           </p>
           <div className="mt-2">
             <p className="text-xs text-pokedex-cyan mb-1">
-              SCANNED: {scannedIds.size}/{totalScannedLimit < Infinity ? totalScannedLimit : pokemonList.length}
+              ESCANEADOS: {scannedIds.size}/{totalScannedLimit < Infinity ? totalScannedLimit : pokemonList.length}
             </p>
             <div className="w-full bg-pokedex-gray rounded-full h-1.5">
               <div
@@ -204,7 +204,7 @@ export default function RosterIndex({
       >
         {filteredList.length === 0 ? (
           <div className="p-4 text-center text-gray-400 text-sm">
-            No Pokémon found
+            Nenhum Pokémon encontrado
           </div>
         ) : (
           <div className="divide-y divide-pokedex-blue-light/10 py-1">
@@ -277,7 +277,7 @@ export default function RosterIndex({
 
       {/* Footer */}
       <div className="p-4 border-t border-pokedex-blue-light/30 flex-shrink-0">
-        <div className="text-xs text-gray-400 mb-2">DB_SYNC</div>
+        <div className="text-xs text-gray-400 mb-2">BANCO SINCRONIZADO</div>
         <div className="w-full bg-pokedex-gray rounded-full h-2">
           <div
             className="bg-pokedex-blue-light h-2 rounded-full glow-blue transition-all"

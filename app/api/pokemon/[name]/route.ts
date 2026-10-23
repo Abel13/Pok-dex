@@ -10,7 +10,7 @@ export async function GET(
 
     if (!name) {
       return NextResponse.json(
-        { error: "Pokémon name or ID is required" },
+        { error: "O nome ou número do Pokémon é obrigatório" },
         { status: 400 }
       );
     }
@@ -24,10 +24,10 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching Pokémon data:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to fetch Pokémon data";
+    const errorMessage = error instanceof Error ? error.message : "Falha ao buscar os dados do Pokémon";
     
-    // Check if it's a 404 (not found) vs other errors
-    if (errorMessage.includes("not found")) {
+    // Diferencia recursos não encontrados dos demais erros.
+    if (errorMessage.includes("não encontrad")) {
       return NextResponse.json(
         { error: `Pokémon "${name}" não encontrado. Verifique o nome e tente novamente.` },
         { status: 404 }

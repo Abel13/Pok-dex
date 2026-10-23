@@ -2,6 +2,7 @@
 
 import { EvolutionChain, ChainLink } from "@/lib/types";
 import Image from "next/image";
+import { POKEMON_NAMES_PT_BY_ID } from "@/lib/translations";
 
 interface EvolutionChainProps {
   chain: EvolutionChain;
@@ -9,6 +10,10 @@ interface EvolutionChainProps {
 
 function EvolutionLink({ link, level = 0 }: { link: ChainLink; level?: number }) {
   const pokemonId = link.species.url.split("/").slice(-2, -1)[0];
+  const fallbackName = link.species.name.replace(/(^|-)(\p{L})/gu, (_, separator, letter) =>
+    `${separator}${letter.toUpperCase()}`,
+  );
+  const displayName = POKEMON_NAMES_PT_BY_ID[Number(pokemonId)] || fallbackName;
   const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
   
   return (
@@ -16,20 +21,24 @@ function EvolutionLink({ link, level = 0 }: { link: ChainLink; level?: number })
       <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mb-2">
         <Image
           src={spriteUrl}
-          alt={link.species.name}
+          alt={displayName}
           fill
           className="object-contain"
           unoptimized
         />
       </div>
       <p className="text-xs md:text-sm font-bold capitalize text-pokedex-neon text-glow">
-        {link.species.name}
+        {displayName}
       </p>
       {link.evolution_details && link.evolution_details[0] && (
         <p className="text-xs text-gray-400 mt-1">
           {link.evolution_details[0].min_level
             ? `Lv. ${link.evolution_details[0].min_level}`
-            : link.evolution_details[0].trigger.name}
+            : link.evolution_details[0].trigger.name === "use-item"
+              ? "Usar item"
+              : link.evolution_details[0].trigger.name === "trade"
+                ? "Troca"
+                : "Condição especial"}
         </p>
       )}
       {link.evolves_to && link.evolves_to.length > 0 && (

@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set");
+  throw new Error("A variável OPENAI_API_KEY não está configurada");
 }
 
 const openai = new OpenAI({
@@ -131,7 +131,7 @@ export async function synthesizeSpeech(
 ): Promise<Buffer> {
   const input = text.trim().slice(0, TTS_MAX_INPUT_CHARS);
   if (!input) {
-    throw new Error("TTS input text is empty");
+    throw new Error("O texto para narração está vazio");
   }
 
   const response = await openai.audio.speech.create({

@@ -55,6 +55,24 @@ export const STAT_NAMES_PT: Record<string, string> = {
   speed: "VELOCIDADE",
 };
 
+export const ABILITY_NAMES_PT: Record<string, string> = {
+  static: "Estática",
+  "lightning-rod": "Para-raios",
+  overgrow: "Supercrescimento",
+  blaze: "Chama",
+  torrent: "Torrente",
+  "shield-dust": "Pó protetor",
+  "shed-skin": "Troca de pele",
+  "compound-eyes": "Olhos compostos",
+  swarm: "Enxame",
+  "keen-eye": "Olhar aguçado",
+  intimidate: "Intimidação",
+  levitate: "Levitação",
+  sturdy: "Robustez",
+  synchronize: "Sincronização",
+  pressure: "Pressão",
+};
+
 export const POKEMON_NAMES_PT_BY_ID: Record<number, string> = {
   1: "Bulbassauro", 2: "Ivyssauro", 3: "Venossauro", 4: "Charmander", 5: "Charmeleon",
   6: "Charizard", 7: "Squirtle", 8: "Wartortle", 9: "Blastoise", 10: "Caterpie",

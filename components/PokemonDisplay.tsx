@@ -3,6 +3,8 @@
 import { PokemonData } from "@/lib/types";
 import Image from "next/image";
 import EvolutionChain from "./EvolutionChain";
+import { STAT_NAMES_PT, TYPE_NAMES_PT } from "@/lib/translations";
+import { getLocalizedFlavorText, POKEAPI_LANG } from "@/lib/i18n";
 
 interface PokemonDisplayProps {
   data: PokemonData;
@@ -15,8 +17,8 @@ export default function PokemonDisplay({ data }: PokemonDisplayProps) {
     pokemon.sprites.front_default;
   
   const flavorText =
-    species.flavor_text_entries.find((entry) => entry.language.name === "en")
-      ?.flavor_text || "No description available.";
+    getLocalizedFlavorText(species.flavor_text_entries, POKEAPI_LANG) ||
+    "Nenhuma descrição disponível.";
 
   const typeColors: Record<string, string> = {
     normal: "bg-gray-500",
@@ -71,7 +73,7 @@ export default function PokemonDisplay({ data }: PokemonDisplayProps) {
                   typeColors[type.type.name] || "bg-gray-500"
                 }`}
               >
-                {type.type.name.toUpperCase()}
+                {(TYPE_NAMES_PT[type.type.name] || type.type.name).toUpperCase()}
               </span>
             ))}
           </div>
@@ -88,7 +90,7 @@ export default function PokemonDisplay({ data }: PokemonDisplayProps) {
               {pokemon.stats.map((stat) => (
                 <div key={stat.stat.name}>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm capitalize">{stat.stat.name.replace("-", " ")}</span>
+                    <span className="text-sm">{STAT_NAMES_PT[stat.stat.name] || stat.stat.name}</span>
                     <span className="text-sm font-bold">{stat.base_stat}</span>
                   </div>
                   <div className="w-full bg-gray-800 rounded-full h-2">

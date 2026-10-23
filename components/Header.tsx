@@ -37,7 +37,7 @@ export default function Header({
             <button
               onClick={onToggleRoster}
               className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-pokedex-gray/50 border border-pokedex-blue-light/30 text-pokedex-blue-light hover:glow-blue transition-all"
-              aria-label="Toggle Roster Menu"
+              aria-label="Abrir ou fechar lista de Pokémon"
             >
               <svg
                 className="w-6 h-6"
@@ -83,7 +83,7 @@ export default function Header({
                   PDEXAI_V1.0
                 </h1>
                 <p className="text-xs text-pokedex-cyan">
-                  SYSTEM STATUS: OPTIMAL // CORE ACTIVE
+                  ESTADO DO SISTEMA: IDEAL // NÚCLEO ATIVO
                 </p>
               </div>
             </div>
@@ -111,7 +111,7 @@ export default function Header({
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                placeholder="SEARCH DATABASE BY NAME OR INDEX..."
+                placeholder="BUSCAR POR NOME OU NÚMERO..."
                 className="w-full pl-10 pr-4 py-2 bg-pokedex-gray/50 border border-pokedex-blue-light/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-pokedex-blue-light focus:glow-blue transition-all font-mono text-sm"
               />
             </div>

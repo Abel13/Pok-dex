@@ -2,7 +2,7 @@
 
 import { PokemonData } from "@/lib/types";
 import Image from "next/image";
-import { TYPE_NAMES_PT } from "@/lib/translations";
+import { ABILITY_NAMES_PT, TYPE_NAMES_PT } from "@/lib/translations";
 
 interface PokemonCentralDisplayProps {
   data: PokemonData | null;
@@ -14,16 +14,16 @@ interface PokemonCentralDisplayProps {
 }
 
 function getPokemonRegion(id: number): string {
-  if (id >= 1 && id <= 151) return "KANTO_REGION";
-  if (id >= 152 && id <= 251) return "JOHTO_REGION";
-  if (id >= 252 && id <= 386) return "HOENN_REGION";
-  if (id >= 387 && id <= 493) return "SINNOH_REGION";
-  if (id >= 494 && id <= 649) return "UNOVA_REGION";
-  if (id >= 650 && id <= 721) return "KALOS_REGION";
-  if (id >= 722 && id <= 809) return "ALOLA_REGION";
-  if (id >= 810 && id <= 905) return "GALAR_REGION";
-  if (id >= 906 && id <= 1025) return "PALDEA_REGION";
-  return "UNKNOWN_REGION";
+  if (id >= 1 && id <= 151) return "REGIÃO_DE_KANTO";
+  if (id >= 152 && id <= 251) return "REGIÃO_DE_JOHTO";
+  if (id >= 252 && id <= 386) return "REGIÃO_DE_HOENN";
+  if (id >= 387 && id <= 493) return "REGIÃO_DE_SINNOH";
+  if (id >= 494 && id <= 649) return "REGIÃO_DE_UNOVA";
+  if (id >= 650 && id <= 721) return "REGIÃO_DE_KALOS";
+  if (id >= 722 && id <= 809) return "REGIÃO_DE_ALOLA";
+  if (id >= 810 && id <= 905) return "REGIÃO_DE_GALAR";
+  if (id >= 906 && id <= 1025) return "REGIÃO_DE_PALDEA";
+  return "REGIÃO_DESCONHECIDA";
 }
 
 export default function PokemonCentralDisplay({
@@ -205,10 +205,10 @@ export default function PokemonCentralDisplay({
             {/* Text */}
             <div className="text-center">
               <p className="text-pokedex-cyan text-sm sm:text-base font-mono text-glow-cyan">
-                ANALYZING...
+                ANALISANDO...
               </p>
               <p className="text-gray-400 text-xs mt-2 font-mono">
-                PROCESSING DATA
+                PROCESSANDO DADOS
               </p>
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function PokemonCentralDisplay({
 
       {/* Current Selection Path - Oculto em mobile muito pequeno */}
       <div className="hidden sm:block absolute top-2 sm:top-4 left-2 sm:left-4 text-xs text-gray-400 font-mono">
-        CURRENT SELECTION {getPokemonRegion(pokemon.id)} / POKEDEX / #
+        SELEÇÃO ATUAL {getPokemonRegion(pokemon.id)} / POKÉDEX / #
         {String(pokemon.id).padStart(3, "0")}
       </div>
 
@@ -246,12 +246,12 @@ export default function PokemonCentralDisplay({
         ))}
         {isLegendary && (
           <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded text-xs font-bold text-white bg-pokedex-purple">
-            LEGENDARY
+            LENDÁRIO
           </span>
         )}
         {isMythical && (
           <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded text-xs font-bold text-white bg-pokedex-purple">
-            MYTHICAL
+            MÍTICO
           </span>
         )}
       </div>
@@ -260,7 +260,7 @@ export default function PokemonCentralDisplay({
       <div className="relative z-10 flex flex-col items-center w-full pt-8 sm:pt-0">
         {/* Magnification Box - Oculto em mobile muito pequeno */}
         <div className="hidden sm:block absolute -top-1 sm:-top-2 -left-1 sm:-left-2 bg-pokedex-gray/80 border border-pokedex-blue-light/30 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs text-pokedex-cyan">
-          MAGNIFICATION x10.42
+          AMPLIAÇÃO x10,42
         </div>
 
         {/* Pokémon Image - Menor em mobile */}
@@ -284,10 +284,7 @@ export default function PokemonCentralDisplay({
           </h2>
           <p className="text-xs sm:text-sm text-gray-400 font-mono">
             GÊNERO:{" "}
-            {data.localized?.genus ||
-              species.genera?.find((g) => g.language.name === "pt-br")?.genus ||
-              species.genera?.find((g) => g.language.name === "en")?.genus ||
-              "DESCONHECIDO"}
+            {`Pokémon ${TYPE_NAMES_PT[pokemon.types[0]?.type.name] || "desconhecido"}`}
           </p>
         </div>
 
@@ -295,13 +292,13 @@ export default function PokemonCentralDisplay({
         <div className="mb-3 sm:mb-4 md:mb-6 w-full px-2 sm:w-auto">
           <div className="bg-pokedex-purple/20 border border-pokedex-purple/30 rounded-lg p-2 sm:p-3 md:p-4 min-w-[160px] sm:min-w-[200px] mx-auto sm:mx-0">
             <div className="text-xs text-pokedex-purple mb-1 sm:mb-2 font-mono">
-              SPD CORE
+              VELOCIDADE
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
                 {speedValue}
               </span>
-              <span className="text-xs sm:text-sm text-gray-400">MPH</span>
+              <span className="text-xs sm:text-sm text-gray-400">PONTOS</span>
             </div>
             <div className="mt-2 w-full bg-pokedex-gray rounded-full h-2">
               <div
@@ -317,7 +314,7 @@ export default function PokemonCentralDisplay({
           {/* Type Analysis */}
           <div className="text-center sm:text-left w-full sm:w-auto">
             <h3 className="text-xs text-gray-400 mb-1 sm:mb-2 font-mono">
-              TYPE ANALYSIS
+              ANÁLISE DE TIPOS
             </h3>
             <div className="flex gap-2 justify-center sm:justify-start flex-wrap">
               {pokemon.types.map((type) => (
@@ -338,14 +335,16 @@ export default function PokemonCentralDisplay({
           {/* Ability */}
           <div className="text-center sm:text-left w-full sm:w-auto">
             <h3 className="text-xs text-gray-400 mb-1 sm:mb-2 font-mono">
-              ABILITY
+              HABILIDADE
             </h3>
             <p className="text-xs sm:text-sm text-white font-mono">
               {pokemon.abilities && pokemon.abilities.length > 0
-                ? pokemon.abilities[0].ability.name
+                ? ABILITY_NAMES_PT[pokemon.abilities[0].ability.name] ||
+                  data.localized?.abilityNames?.[0] ||
+                  pokemon.abilities[0].ability.name
                     .toUpperCase()
                     .replace(/-/g, " // ")
-                : "UNKNOWN"}
+                : "DESCONHECIDA"}
             </p>
           </div>
         </div>

@@ -18,8 +18,7 @@ export function getLocalizedGenus(
   if (!genera?.length) return "";
   const entry = genera.find((g) => g.language.name === lang);
   if (entry) return entry.genus;
-  const fallback = genera.find((g) => g.language.name === "en");
-  return fallback?.genus ?? genera[0]?.genus ?? "";
+  return "";
 }
 
 export function getLocalizedFlavorText(
@@ -29,7 +28,5 @@ export function getLocalizedFlavorText(
   if (!entries?.length) return "";
   const entry = entries.find((e) => e.language.name === lang);
   if (entry) return entry.flavor_text.replace(/\f/g, " ");
-  const fallback = entries.find((e) => e.language.name === "en");
-  if (fallback) return fallback.flavor_text.replace(/\f/g, " ");
-  return entries[0]?.flavor_text?.replace(/\f/g, " ") ?? "";
+  return "";
 }

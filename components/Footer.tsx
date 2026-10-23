@@ -5,26 +5,9 @@ import { useState, useEffect } from "react";
 const BUYMECOFFEE_USERNAME = process.env.NEXT_PUBLIC_BUYMECOFFEE_USERNAME;
 
 export default function Footer() {
-  const [coordinates, setCoordinates] = useState<string>(
-    "34.0522° N, 118.2437° W",
-  );
   const [latency, setLatency] = useState<number>(14);
 
   useEffect(() => {
-    // Try to get real coordinates
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude.toFixed(4);
-          const lon = position.coords.longitude.toFixed(4);
-          setCoordinates(`${lat}° N, ${lon}° W`);
-        },
-        () => {
-          // Keep default if geolocation fails
-        },
-      );
-    }
-
     // Simulate latency measurement
     const interval = setInterval(() => {
       const mockLatency = Math.floor(Math.random() * 10) + 10;
@@ -40,13 +23,13 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
           {/* Left: Coordinates */}
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">COORD:</span>
-            <span className="text-pokedex-cyan">{coordinates}</span>
+            <span className="text-gray-400">LOCALIZAÇÃO:</span>
+            <span className="text-pokedex-cyan">SOMENTE NA CAPTURA</span>
           </div>
 
           {/* Center: Latency */}
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">LATENCY:</span>
+            <span className="text-gray-400">LATÊNCIA:</span>
             <span className="text-pokedex-blue-light">{latency} MS</span>
           </div>
 
@@ -54,7 +37,7 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-pokedex-cyan">LIVE_SYNC</span>
+              <span className="text-pokedex-cyan">SINCRONIZAÇÃO ATIVA</span>
             </div>
           </div>
         </div>

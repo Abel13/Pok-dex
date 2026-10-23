@@ -12,14 +12,14 @@ export async function POST(request: NextRequest) {
 
     if (!text) {
       return NextResponse.json(
-        { error: "Missing or empty text" },
+        { error: "Texto ausente ou vazio" },
         { status: 400 },
       );
     }
 
     if (!isTtsVoice(requestedVoice)) {
       return NextResponse.json(
-        { error: "Invalid voice" },
+        { error: "Voz inválida" },
         { status: 400 },
       );
     }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error synthesizing speech:", error);
     return NextResponse.json(
-      { error: "Failed to synthesize speech" },
+      { error: "Falha ao sintetizar a fala" },
       { status: 502 },
     );
   }
