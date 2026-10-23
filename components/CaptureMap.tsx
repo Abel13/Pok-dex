@@ -38,6 +38,11 @@ interface GroupedCapture {
   pokemonIds: number[];
 }
 
+const cartoApiKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+const cartoTileUrl = `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${
+  cartoApiKey ? `?api_key=${encodeURIComponent(cartoApiKey)}` : ""
+}`;
+
 // Round coordinates to 4 decimal places (~11m precision) for grouping
 function roundCoordinate(coord: number): number {
   return Math.round(coord * 10000) / 10000;
@@ -290,8 +295,8 @@ export default function CaptureMap({
           className="z-10"
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url={cartoTileUrl}
           />
 
           {groupedCaptures.map((group, index) => {

@@ -40,27 +40,27 @@ function setDismissed(): void {
   }
 }
 
-function getIsIOS(): boolean {
+function getIsChrome(): boolean {
   if (typeof window === "undefined") return false;
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const userAgent = navigator.userAgent;
+  return (
+    /Chrome\//.test(userAgent) &&
+    !/Edg\//.test(userAgent) &&
+    !/OPR\//.test(userAgent) &&
+    !/SamsungBrowser\//.test(userAgent)
+  );
 }
 
 export default function PWAInstallBanner() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isStandalone, setIsStandalone] = useState(false);
   const [isDismissed, setIsDismissed] = useState(true);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-
-  useEffect(() => {
-    setIsStandalone(getIsStandalone());
-    setIsDismissed(getWasDismissedRecently());
-    setIsIOS(getIsIOS());
-  }, []);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
+      if (!getIsChrome() || getIsStandalone()) return;
+
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       if (!getWasDismissedRecently()) {
@@ -101,16 +101,9 @@ export default function PWAInstallBanner() {
     setDismissed();
   }, []);
 
-  const showBanner =
-    !isStandalone && !isDismissed && !isInstalled;
+  const showBanner = deferredPrompt && !isDismissed && !isInstalled;
 
   if (!showBanner) return null;
-
-  const installHint = !deferredPrompt
-    ? isIOS
-      ? "Toque em Compartilhar (□↑) → Adicionar à Tela de Início"
-      : "Use o menu do navegador (⋮) → Instalar aplicativo"
-    : null;
 
   return (
     <div
@@ -121,23 +114,16 @@ export default function PWAInstallBanner() {
     >
       <p className="text-pokedex-cyan flex-1 min-w-0">
         Instale o Pokédex para usar como app.
-        {installHint && (
-          <span className="block mt-1 text-xs text-gray-400">
-            {installHint}
-          </span>
-        )}
       </p>
       <div className="flex items-center gap-2 shrink-0">
-        {deferredPrompt && (
-          <button
-            type="button"
-            onClick={prompt}
-            aria-label="Instalar aplicativo"
-            className="min-h-[44px] px-4 py-2.5 sm:py-2 rounded bg-pokedex-cyan hover:bg-cyan-500 text-black font-bold text-sm sm:text-xs transition-all"
-          >
-            Instalar
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={prompt}
+          aria-label="Instalar aplicativo"
+          className="min-h-[44px] px-4 py-2.5 sm:py-2 rounded bg-pokedex-cyan hover:bg-cyan-500 text-black font-bold text-sm sm:text-xs transition-all"
+        >
+          Instalar
+        </button>
         <button
           type="button"
           onClick={dismiss}
